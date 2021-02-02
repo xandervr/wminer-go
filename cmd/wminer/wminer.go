@@ -121,7 +121,7 @@ func (m *Miner) sendBlock(block *helpers.Block) *helpers.Block {
 }
 
 func (m *Miner) generateBaseString(merkleRoot string, timestamp int64) string {
-	return m.Version + helpers.LittleEndian(m.PreviousHash) + helpers.LittleEndian(merkleRoot) + helpers.HexInt(timestamp) + helpers.HexFloat64(m.Difficulty)
+	return m.Version + helpers.LittleEndian(m.PreviousHash) + helpers.LittleEndian(merkleRoot) + helpers.LittleEndian(helpers.HexInt(timestamp)) + helpers.LittleEndian(helpers.HexFloat64(m.Difficulty))
 }
 
 func (m *Miner) assembleBlock(transactions []*helpers.Transaction, timestamp int64) (string, []*helpers.Transaction) {
@@ -179,7 +179,7 @@ func (m *Miner) isDifficultEnough(hash string) bool {
 	hashInt := new(big.Int)
 	hashInt.SetString(hash, 16)
 	diffInt := new(big.Int)
-	diffInt.SetString(fmt.Sprintf("%f", m.Difficulty), 10)
+	diffInt.SetString(fmt.Sprintf("%f", helpers.CalculateDifficulty(m.Difficulty)), 10)
 	return hashInt.Cmp(diffInt) == -1
 }
 
@@ -201,7 +201,7 @@ func (m *Miner) mineBlock(template string, transactions []*helpers.Transaction, 
 	hashCount := 0
 	start := time.Now().Unix()
 	for m.CurrentPreviousHash == m.PreviousHash {
-		hash := helpers.SerializeSHA256(fmt.Sprintf("%s%d", template, nonce))
+		hash := helpers.LittleEndian(helpers.SerializeSHA256(helpers.SerializeSHA256(fmt.Sprintf("%s%s", template, helpers.LittleEndian(helpers.HexInt(int64(nonce)))))))
 		hashCount++
 		intermediateTime := time.Now().Unix() - start
 		m.calculateHashrate(hashCount, intermediateTime, nonce)

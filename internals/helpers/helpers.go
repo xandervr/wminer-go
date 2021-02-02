@@ -5,6 +5,7 @@ import (
 
 	"encoding/hex"
 	"fmt"
+	"math"
 	"math/big"
 	"strings"
 
@@ -25,7 +26,10 @@ func acceleratedSha256(txt string) string {
 	shaWriter.Write([]byte(txt))
 	digest := hex.EncodeToString(shaWriter.Sum(nil))
 	return digest
+}
 
+func CalculateDifficulty(bits float64) float64 {
+	return 0xffff * math.Pow(2, 208) / float64(bits)
 }
 
 func HexInt(n int64) string {

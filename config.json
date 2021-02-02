@@ -1,6 +1,6 @@
 {
     "wallet_address": "0x10aa4fbbe7b916154447f2cf8797f2ed2b2cef27ebd636bf49eb6bcc9c84d317",
-    "node_host": "78.20.205.31",
+    "node_host": "192.168.1.41",
     "node_port": 8000,
     "threads": 1
 }
