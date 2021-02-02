@@ -1,18 +1,29 @@
 package helpers
 
 import (
-	"crypto/sha256"
+	// "crypto/sha256"
+
 	"encoding/hex"
 	"fmt"
 	"math/big"
 	"strings"
+
+	sha256 "github.com/minio/sha256-simd"
 )
 
-
 func SerializeSHA256(txt string) string {
-	h := sha256.New()
-	h.Write([]byte(txt))
-	return hex.EncodeToString(h.Sum(nil))
+	// h := sha256.New()
+	// h.Write([]byte(txt))
+	// return hex.EncodeToString(h.Sum(nil))
+	return acceleratedSha256(txt)
+}
+
+func acceleratedSha256(txt string) string {
+	shaWriter := sha256.New()
+	shaWriter.Write([]byte(txt))
+	digest := hex.EncodeToString(shaWriter.Sum(nil))
+	return digest
+
 }
 
 func HexInt(n int64) string {
@@ -31,10 +42,10 @@ func HexFloat64(n float64) string {
 
 func LittleEndian(txt string) string {
 	splitted := make([]string, 0)
-	for i := 0; i < len(txt); i+=2 {
-		maxRange := i+2
+	for i := 0; i < len(txt); i += 2 {
+		maxRange := i + 2
 		if len(txt) < maxRange {
-			maxRange = i+1
+			maxRange = i + 1
 		}
 		splitted = append([]string{txt[i:maxRange]}, splitted...)
 	}
@@ -46,10 +57,10 @@ func GenerateMerkleRoot(txs []*Transaction) string {
 	for _, tx := range txs {
 		h := SerializeSHA256(
 			LittleEndian(HexInt(tx.Timestamp)) +
-			LittleEndian(tx.Sender) + 
-			LittleEndian(tx.Receiver) + 
-			LittleEndian(HexFloat64(tx.Amount)) +
-			LittleEndian(HexFloat64(tx.Fee)))
+				LittleEndian(tx.Sender) +
+				LittleEndian(tx.Receiver) +
+				LittleEndian(HexFloat64(tx.Amount)) +
+				LittleEndian(HexFloat64(tx.Fee)))
 		hashes = append(hashes, h)
 	}
 
@@ -61,7 +72,7 @@ func GenerateMerkleRoot(txs []*Transaction) string {
 		for i < len(hsh) {
 			l := hsh[i]
 			r := l
-			if i + 1 < len(hsh) {
+			if i+1 < len(hsh) {
 				r = hsh[i+1]
 			}
 			parents = append(parents, SerializeSHA256(l+r))
