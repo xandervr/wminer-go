@@ -253,7 +253,7 @@ func showBanner(address string) {
 }
 
 func main() {
-	config, err := config.LoadConfiguration("config.json")
+	config, err := config.LoadConfiguration("./config.json")
 	if err != nil {
 		panic(err)
 	}
