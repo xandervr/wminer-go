@@ -260,6 +260,7 @@ func main() {
 	showBanner(config.WalletAddress)
 	ctx := context.Background()
 	m := NewMiner(ctx, config.NodeHost, config.NodePort, config.WalletAddress, config.Threads)
+
 	m.GetChainInfo()
 	initial := time.Now().Unix()
 	for i := 0; i < config.Threads; i++ {

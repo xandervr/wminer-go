@@ -19,7 +19,9 @@ func SerializeSHA256(txt string) string {
 }
 
 func acceleratedSha256(txt string) string {
+	// server := sha256.NewAvx512Server()
 	shaWriter := sha256.New()
+	// shaWriter = sha256.NewAvx512(server)
 	shaWriter.Write([]byte(txt))
 	digest := hex.EncodeToString(shaWriter.Sum(nil))
 	return digest
